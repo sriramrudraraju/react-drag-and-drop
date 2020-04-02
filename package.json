@@ -1,6 +1,7 @@
 {
   "name": "react-drag-and-drop",
   "version": "0.1.0",
+  "homepage": "https://sriramrudraraju.github.io/react-drag-and-drop/",
   "private": true,
   "dependencies": {
     "react": "16.13.1",
