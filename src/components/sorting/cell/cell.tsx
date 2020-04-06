@@ -4,9 +4,7 @@ import { useDrag, useDrop } from 'react-dnd';
 import { itemTypes } from '../utils/dnd-item-types';
 
 const styleDrag = {
-  border: '1px solid gray',
   padding: 2,
-  backgroundColor: 'white',
   cursor: 'move',
 };
 
@@ -56,7 +54,7 @@ export const Cell: React.FC<CellProps> = ({ id, children, moveCell, findCell, co
   const opacity = isDragging ? 0 : 1;
   const border = isDragging ? '1px dashed gray': 'none';
   return (
-    <div ref={drop} style={{ border, margin: 2, width}}>
+    <div ref={drop} style={{ border, margin: 2, width }}>
       <div ref={drag} style={{ ...styleDrag, opacity, ...style }}>
         {children}
       </div>
