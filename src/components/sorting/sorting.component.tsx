@@ -40,6 +40,8 @@ export const Sorting: FC<SortingProps> = ({ list, columns = 1, onListChange, sty
   return (
     <div 
       style={{
+        height: '100%',
+        width: '100%',
         display: 'flex', 
         flexWrap: 'wrap', 
         justifyContent: 'space-between',
