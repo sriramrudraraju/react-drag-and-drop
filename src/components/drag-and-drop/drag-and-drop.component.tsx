@@ -1,70 +1,42 @@
-import React, { FC, useCallback  } from 'react';
+import React, { useState } from "react";
+import { DragDropContext } from "react-beautiful-dnd";
 
-import { Sorting, List } from './sorting.component';
-import { shiftItemFromTo } from './utils/shift-item-from-to';
+import { DragabbleColumn } from  './dragabble-column/dragabble-column.component';
 
-export interface Column {
-  id: string | number;
-  name?: string;
-  dropType: string[];
-  list: List[];
-}
+import { reorder } from './utils/reorder';
 
-interface DragAndDropProps {
-  columns: Column[];
-  onColumnsChange: (columns: Column[]) => void;
-}
-export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsChange}) => {
+const initial = Array.from({ length: 10 }, (v, k) => k).map(k => {
+  const custom = {
+    id: `id-${k}`,
+    children: `Quote ${k}`
+  };
+  return custom;
+});
 
+export const DragAndDrop = () => {
+  const [state, setState] = useState(initial);
 
-  const moveCell = useCallback(
-    (fromColumnId: string, toColumnId: string, droppedId: string, droppedCellIndex: number) => {
-      const copy = JSON.parse(JSON.stringify(columns)); // TODO: Heavy operation
+  function onDragEnd(result: any) {
+    if (!result.destination) {
+      return;
+    }
 
-      const fromColumn = columns.filter((c) =>  `${c.id}` === fromColumnId)[0];
-      const fromColumnIndex = columns.indexOf(fromColumn);
+    if (result.destination.index === result.source.index) {
+      return;
+    }
 
-      const droppedCell = fromColumn.list.filter((c) => `${c.id}` === droppedId)[0];
-      // index of dropped cell before its dropped to new location
-      const droppedCellOriginalIndex = fromColumn.list.indexOf(droppedCell);
+    const quotes = reorder(
+      state,
+      result.source.index,
+      result.destination.index
+    );
 
-      const toColumn = columns.filter((c) =>  `${c.id}` === toColumnId)[0];
-      const toColumnIndex = columns.indexOf(toColumn);
-      
-      // if from same column, just rearrage them
-      if(fromColumnId === toColumnId) {
-        // if same cell indexes
-        if(droppedCellOriginalIndex === droppedCellIndex) {
-          return
-        }
-        const updatedList = shiftItemFromTo(droppedCellOriginalIndex, droppedCellIndex, fromColumn.list);
-        copy[fromColumnIndex].list = updatedList;
-      } else {
-        // delete cell from the source column
-        copy[fromColumnIndex].list.splice(droppedCellOriginalIndex, 1);
-        // add cell to destination column
-        copy[toColumnIndex].list.splice(droppedCellIndex, 0, droppedCell);
-      }
-      // console.log(copy)
-
-      onColumnsChange(copy);
-    },
-    [columns, onColumnsChange]
-  );
+    setState(quotes);
+  }
 
   return (
-    <div className="app-root">
-      {
-        columns.map((column) => (
-          <Sorting
-            key={column.id}
-            columnId={`${column.id}`}
-            list={column.list}
-            moveCell={moveCell}
-            style={{width: 100}}
-          />
-        ))
-      }
-    </div>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <DragabbleColumn droppableId="List" list={state} />
+    </DragDropContext>
   );
 }
