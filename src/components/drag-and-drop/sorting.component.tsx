@@ -1,44 +1,45 @@
 import React, { FC, useCallback } from 'react';
+import { useDrop } from 'react-dnd';
 
 import { Cell } from './cell/cell';
+import { itemTypes } from './utils/dnd-item-types';
 
-import { shiftItemFromTo } from './utils/shift-item-from-to';
-
-interface List {
+export interface List {
   id: number | string;
   children: string | JSX.Element | null;
 }
 
 interface SortingProps {
   list: List[]; // array of elements
-  onListChange: (list: List[]) => void;
-  columns?: number; // number of elements per row; default = 1
+  moveCell: (fromColumnId: string, toColumnId: string, droppedId: string, droppedCellIndex: number) => void;
+  columnId: string;
   style?: object;
 }
-export const Sorting: FC<SortingProps> = ({ list, columns = 1, onListChange, style }) => {
+export const Sorting: FC<SortingProps> = ({ list, columnId, moveCell, style }) => {
 
   const findCell = useCallback(
     (id: string) => {
-      const cell = list.filter((c) => `${c.id}` === id)[0]
+      const cell = list.filter((c) => `${c.id}` === id)[0];
       return {
         cell,
         index: list.indexOf(cell),
       }
     },
     [list]
-  )
-
-  const moveCell = useCallback(
-    (dragIndex: string, hoverIndex: number) => {
-      const { index } = findCell(dragIndex);
-      const newList = shiftItemFromTo(index, hoverIndex, list);
-      onListChange(newList);
-    },
-    [list, onListChange, findCell]
   );
 
+  const [, drop] = useDrop({
+    accept: itemTypes.ELEMENT,
+    drop(item, monitor) {
+      if(!list.length) {
+        return {...monitor.getItem(), droppedColumnId: columnId, droppedCellIndex: 0};
+      }
+    }
+  });
+
   return (
-    <div 
+    <div
+      ref={drop}
       style={{
         height: '100%',
         width: '100%',
@@ -54,7 +55,7 @@ export const Sorting: FC<SortingProps> = ({ list, columns = 1, onListChange, sty
           id={`${ele.id}`}
           moveCell={moveCell}
           findCell={findCell}
-          columns={columns}
+          columnId={columnId}
         >
           {ele.children}
         </Cell>
