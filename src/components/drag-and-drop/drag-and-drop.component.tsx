@@ -1,42 +1,85 @@
 import React, { useState } from "react";
-import { DragDropContext } from "react-beautiful-dnd";
+import { DragDropContext, DropResult, DraggableLocation } from "react-beautiful-dnd";
 
 import { DragabbleColumn } from  './dragabble-column/dragabble-column.component';
+import { Element } from './dragabble-cell/draggable-cell.component';
 
 import { reorder } from './utils/reorder';
 
-const initial = Array.from({ length: 10 }, (v, k) => k).map(k => {
-  const custom = {
-    id: `id-${k}`,
-    children: `Quote ${k}`
-  };
-  return custom;
-});
+/**
+ * Moves an item from one list to another list.
+ */
+const move = <T extends Element>(source: T[], destination: T[], droppableSource: DraggableLocation, droppableDestination: DraggableLocation) => {
+  const sourceClone = Array.from(source);
+  const destClone = Array.from(destination);
+  const [removed] = sourceClone.splice(droppableSource.index, 1);
 
-export const DragAndDrop = () => {
-  const [state, setState] = useState(initial);
+  destClone.splice(droppableDestination.index, 0, removed);
 
-  function onDragEnd(result: any) {
-    if (!result.destination) {
+  const result: any = {};
+  result[droppableSource.droppableId] = sourceClone;
+  result[droppableDestination.droppableId] = destClone;
+
+  return result;
+};
+
+interface DragAndDropProps<T> {
+  columns: {[key: string]: T[]};
+  dropabbleIds: string[];
+}
+
+export const DragAndDrop = <T extends Element>({columns, dropabbleIds}: DragAndDropProps<T>) => {
+  const [state, setState] = useState(columns);
+
+  function onDragEnd(result: DropResult) {
+    const { source, destination } = result;
+
+    // dropped outside the list
+    if (!destination) {
       return;
     }
 
-    if (result.destination.index === result.source.index) {
-      return;
-    }
+    // TODO: need to check if source and destinations id exists in state
 
-    const quotes = reorder(
-      state,
-      result.source.index,
-      result.destination.index
-    );
+    // if within same column
+    if (source.droppableId === destination.droppableId) {
+      // reorder them
+      const items = reorder(
+          state[source.droppableId],
+          source.index,
+          destination.index
+      );
 
-    setState(quotes);
+      setState({
+        ...state,
+        [source.droppableId]: items
+      });
+  } else {
+      const result = move(
+          state[source.droppableId],
+          state[destination.droppableId],
+          source,
+          destination
+      );
+
+      setState({
+          ...state,
+          ...result
+      });
+  }
   }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <DragabbleColumn droppableId="List" list={state} />
+      {
+        dropabbleIds.map((col) => (
+          <DragabbleColumn
+            key={col} 
+            droppableId={col}
+            list={state[col]}
+          />
+        ))
+      }
     </DragDropContext>
   );
 }

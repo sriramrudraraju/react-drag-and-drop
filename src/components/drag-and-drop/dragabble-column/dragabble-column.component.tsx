@@ -14,7 +14,7 @@ export const DragabbleColumn = <T extends Element>({droppableId, list}: Dragabbl
         {provided => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
             {
-              list.map((ele, index) => (
+              list && list.map((ele, index) => (
                 <DraggableCell element={ele} index={index} key={ele.id} />
               ))
             }
