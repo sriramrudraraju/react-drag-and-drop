@@ -32,7 +32,9 @@ const cols = {
   list1: {
     list: getItems(10),
     style: {
-      margin: 16
+      margin: 16,
+      maxHeight: 500,
+      overflow: 'auto'
     },
   },
   list2: {
