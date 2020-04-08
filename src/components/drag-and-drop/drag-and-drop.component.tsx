@@ -1,8 +1,8 @@
-import React, { FC, useState, useCallback } from "react";
+import React, { FC, useCallback } from "react";
 import { DragDropContext, DropResult, DraggableLocation } from "react-beautiful-dnd";
 
 import { DragabbleColumn } from  './dragabble-column/dragabble-column.component';
-import { Item } from './dragabble-cell/draggable-cell.component';
+import { Item } from './dragabble-item/draggable-item.component';
 
 import { reorder } from './utils/reorder';
 
@@ -23,12 +23,17 @@ const move = (source: Item[], destination: Item[], droppableSource: DraggableLoc
   return result;
 };
 
-interface DragAndDropProps {
-  columns: {[key: string] : {items: Item[]; style?: object}};
+
+export interface Column {
+  [key: string]: { items: Item[]; style?: object; }
 }
 
-export const DragAndDrop: FC<DragAndDropProps> = ({columns}) => {
-  const [state, setState] = useState(columns);
+interface DragAndDropProps {
+  columns: Column;
+  onColumnsUpdate: (obj: Column) => void;
+}
+
+export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) => {
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
@@ -43,53 +48,53 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns}) => {
       if (source.droppableId === destination.droppableId) {
         // reorder them
         const reorderedList = reorder(
-            state[source.droppableId].items,
+            columns[source.droppableId].items,
             source.index,
             destination.index
         );
   
         // update source column list state
-        setState({
-          ...state,
+        onColumnsUpdate({
+          ...columns,
           [source.droppableId]: {
-            ...state[source.droppableId],
+            ...columns[source.droppableId],
             items: reorderedList
           }
         });
       } else {
           // get the updated source and destination lists
           const result = move(
-              state[source.droppableId].items,
-              state[destination.droppableId].items,
+              columns[source.droppableId].items,
+              columns[destination.droppableId].items,
               source,
               destination
           );
     
-          setState({
-              ...state,
+          onColumnsUpdate({
+              ...columns,
               [source.droppableId]: {
-                ...state[source.droppableId],
+                ...columns[source.droppableId],
                 items: result[source.droppableId]
               },
               [destination.droppableId]: {
-                ...state[destination.droppableId],
+                ...columns[destination.droppableId],
                 items: result[destination.droppableId]
               }
           });
         }
       },
-    [state]
+    [columns, onColumnsUpdate]
   );
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       {
-        Object.keys(state).map((key) => (
+        Object.keys(columns).map((key) => (
           <DragabbleColumn
             key={key} 
             droppableId={key}
-            items={state[key].items}
-            style={state[key].style}
+            items={columns[key].items}
+            style={columns[key].style}
           />
         ))
       }

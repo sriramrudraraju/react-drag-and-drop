@@ -3,16 +3,16 @@ import { Draggable } from "react-beautiful-dnd";
 
 export interface Item {
   id: string | number; // NOTE: id has to be unique across all dragging elements
-  children: string | JSX.Element | null;
-  getCellStyle?: (isDragging: boolean) => object;
+  children: () => string | JSX.Element | null;
+  getItemStyle?: (isDragging: boolean) => object;
 }
 
-interface DraggableCellProps {
+interface DraggableItemProps {
   item: Item;
   index: number;
 }
 
-export const DraggableCell: FC<DraggableCellProps> = ({ item, index }) => {
+export const DraggableItem: FC<DraggableItemProps> = ({ item, index }) => {
   return (
     <Draggable draggableId={`${item.id}`} index={index}>
       {(provided, draggableSnapshot) => (
@@ -22,11 +22,11 @@ export const DraggableCell: FC<DraggableCellProps> = ({ item, index }) => {
         >
           <div 
             ref={provided.innerRef}
-            style={item.getCellStyle && item.getCellStyle(
+            style={item.getItemStyle && item.getItemStyle(
               draggableSnapshot.isDragging
             )}
           >
-            {item.children}
+            {item.children()}
           </div>
         </div>
       )}
