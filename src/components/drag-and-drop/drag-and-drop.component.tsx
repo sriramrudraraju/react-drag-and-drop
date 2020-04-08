@@ -2,14 +2,14 @@ import React, { FC, useState, useCallback } from "react";
 import { DragDropContext, DropResult, DraggableLocation } from "react-beautiful-dnd";
 
 import { DragabbleColumn } from  './dragabble-column/dragabble-column.component';
-import { Element } from './dragabble-cell/draggable-cell.component';
+import { Item } from './dragabble-cell/draggable-cell.component';
 
 import { reorder } from './utils/reorder';
 
 /**
  * Moves an item from one list to another list.
  */
-const move = (source: Element[], destination: Element[], droppableSource: DraggableLocation, droppableDestination: DraggableLocation) => {
+const move = (source: Item[], destination: Item[], droppableSource: DraggableLocation, droppableDestination: DraggableLocation) => {
   const sourceClone = Array.from(source);
   const destClone = Array.from(destination);
   const [removed] = sourceClone.splice(droppableSource.index, 1);
@@ -24,7 +24,7 @@ const move = (source: Element[], destination: Element[], droppableSource: Dragga
 };
 
 interface DragAndDropProps {
-  columns: {[key: string] : {list: Element[]; style?: object}};
+  columns: {[key: string] : {items: Item[]; style?: object}};
 }
 
 export const DragAndDrop: FC<DragAndDropProps> = ({columns}) => {
@@ -43,7 +43,7 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns}) => {
       if (source.droppableId === destination.droppableId) {
         // reorder them
         const reorderedList = reorder(
-            state[source.droppableId].list,
+            state[source.droppableId].items,
             source.index,
             destination.index
         );
@@ -53,14 +53,14 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns}) => {
           ...state,
           [source.droppableId]: {
             ...state[source.droppableId],
-            list: reorderedList
+            items: reorderedList
           }
         });
       } else {
           // get the updated source and destination lists
           const result = move(
-              state[source.droppableId].list,
-              state[destination.droppableId].list,
+              state[source.droppableId].items,
+              state[destination.droppableId].items,
               source,
               destination
           );
@@ -69,11 +69,11 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns}) => {
               ...state,
               [source.droppableId]: {
                 ...state[source.droppableId],
-                list: result[source.droppableId]
+                items: result[source.droppableId]
               },
               [destination.droppableId]: {
                 ...state[destination.droppableId],
-                list: result[destination.droppableId]
+                items: result[destination.droppableId]
               }
           });
         }
@@ -88,7 +88,7 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns}) => {
           <DragabbleColumn
             key={key} 
             droppableId={key}
-            list={state[key].list}
+            items={state[key].items}
             style={state[key].style}
           />
         ))

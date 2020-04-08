@@ -29,22 +29,22 @@ const getItems = (count: number, offset = 0) =>
   }));
 
 const cols = {
-  list1: {
-    list: getItems(10),
+  column1: {
+    items: getItems(10),
     style: {
       margin: 16,
       maxHeight: 500,
       overflow: 'auto'
     },
   },
-  list2: {
-    list: getItems(5, 10),
+  column2: {
+    items: getItems(5, 10),
     style: {
       margin: 16
     }
   },
-  list3: {
-    list: getItems(10, 15),
+  column3: {
+    items: getItems(10, 15),
     style: {
       margin: 16
     }

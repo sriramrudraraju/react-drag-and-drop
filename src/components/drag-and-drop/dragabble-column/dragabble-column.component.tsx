@@ -1,22 +1,22 @@
 import React, { FC } from 'react';
 import { Droppable } from "react-beautiful-dnd";
 
-import { DraggableCell, Element } from '../dragabble-cell/draggable-cell.component';
+import { DraggableCell, Item } from '../dragabble-cell/draggable-cell.component';
 
 export interface DragabbleColumnProps {
   droppableId: string;
-  list: Element[];
+  items: Item[];
   style?: object;
 }
 
-export const DragabbleColumn: FC<DragabbleColumnProps> = ({droppableId, list, style}) => {
+export const DragabbleColumn: FC<DragabbleColumnProps> = ({droppableId, items, style}) => {
   return (
       <Droppable droppableId={droppableId}>
         {provided => (
           <div ref={provided.innerRef} {...provided.droppableProps} style={{...style}}>
             {
-              list && list.map((ele, index) => (
-                <DraggableCell element={ele} index={index} key={ele.id} />
+              items && items.map((ele, index) => (
+                <DraggableCell item={ele} index={index} key={ele.id} />
               ))
             }
             {provided.placeholder}
