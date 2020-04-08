@@ -1,67 +1,61 @@
-import React, { useState, useCallback } from 'react';
+import React from 'react';
 
-import { DragAndDrop, Column } from '../drag-and-drop/drag-and-drop.component'
+import { DragAndDrop } from '../drag-and-drop/drag-and-drop.component';
 
 import './app.css';
 
-const COLUMNS = [
-  {
-    id: 1,
-    name: 'column1',
-    dropType: ['element'],
-    list: [
-      {
-        id: 2,
-        children: 'Panel 2'
-      },
-      {
-        id: 3,
-        children: 'Panel 3'
-      },
-      {
-        id: 5,
-        children: 'Panel 5'
-      }
-    ]
+// styles for cells
+const getCellStyle = (isDragging: boolean) => {
+  return ({
+    // some basic styles to make the items look a bit nicer
+    userSelect: 'none',
+    padding: 8 * 2,
+    margin: `0 0 $8px 0`,
+    border: '5px solid yellow',
+    height: 30,
+    width: 100,
+  
+    // change background colour if dragging
+    background: isDragging ? 'lightgreen' : 'red',
+  })
+};
+
+// fake data generator
+const getItems = (count: number, offset = 0) =>
+  Array.from({ length: count }, (v, k) => k).map(k => ({
+      id: `item-${k + offset}`,
+      children: <div >item {k + offset}</div>,
+      getCellStyle
+  }));
+
+const cols = {
+  list1: {
+    list: getItems(10),
+    style: {
+      margin: 16,
+      maxHeight: 500,
+      overflow: 'auto'
+    },
   },
-  {
-    id: 6,
-    name: 'column2',
-    dropType: ['element'],
-    list: [
-      {
-        id: 7,
-        children: 'Panel 7'
-      },
-      {
-        id: 8,
-        children: 'Panel 8'
-      },
-      {
-        id: 9,
-        children: 'Panel 9'
-      }
-    ]
+  list2: {
+    list: getItems(5, 10),
+    style: {
+      margin: 16
+    }
+  },
+  list3: {
+    list: getItems(10, 15),
+    style: {
+      margin: 16
+    }
   }
-];
+}
 
 export const App = () => {
-  const [columns, setColumns] = useState<Column[]>(COLUMNS);
-
-  const onColumnsChange = useCallback(
-    (columns: Column[]) => {
-      console.log(columns)
-      // console.log(columns)
-      setColumns(columns);
-    },
-    [setColumns]
-  );
-
   return (
     <div className="app-root">
       <DragAndDrop 
-        columns={columns}
-        onColumnsChange={onColumnsChange}
+        columns={cols}
       />
     </div>
   );
