@@ -25,7 +25,7 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) =>
       if (destColumnMax && destItemsClone.length >= destColumnMax) {
         // do swapping
         // droppable index should be less than column max
-        if(droppableDestination.index && droppableDestination.index < destColumnMax) {
+        if(droppableDestination.index < destColumnMax) {
           // removing elements at their indexes
           const [soureceRemoved] = sourceItemsClone.splice(droppableSource.index, 1);
           const [destinationRemoved] = destItemsClone.splice(droppableDestination.index, 1);
@@ -111,6 +111,7 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) =>
               name: key,
               ...columns[key]
             }}
+            columns={columns}
           />
         ))
       }

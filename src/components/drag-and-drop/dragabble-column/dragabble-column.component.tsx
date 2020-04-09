@@ -3,27 +3,34 @@ import { Droppable } from "react-beautiful-dnd";
 
 import { DraggableItem, Item } from '../dragabble-item/draggable-item.component';
 
-export interface Column {
+export interface Column{
   items: Item[]; 
   style?: object; // column style
   max?: number; // max number of elements in a column
-  name?: string;
+  name: string;
 }
 
 export interface DragabbleColumnProps {
   droppableId: string;
-  column: Column
+  column: Column;
+  columns: {[key: string]: Column};
 }
 
-export const DragabbleColumn: FC<DragabbleColumnProps> = ({droppableId, column}) => {
+export const DragabbleColumn: FC<DragabbleColumnProps> = ({droppableId, column, columns}) => {
   const { items, style } = column;
   return (
       <Droppable droppableId={droppableId}>
-        {provided => (
+        {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps} style={{...style}}>
             {
               items && items.map((ele, index) => (
-                <DraggableItem item={ele} index={index} key={ele.id} column={column} />
+                <DraggableItem 
+                  item={ele} 
+                  index={index} 
+                  key={ele.id} 
+                  column={column} 
+                  columns={columns}
+                />
               ))
             }
             {provided.placeholder}
