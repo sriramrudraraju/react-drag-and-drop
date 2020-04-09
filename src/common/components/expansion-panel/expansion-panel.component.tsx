@@ -17,9 +17,10 @@ const useStyles = makeStyles(() =>
 interface SimpleExpansionPanelProps {
   id: number;
   isExpanded?: boolean;
+  style?: object;
 }
 
-export const SimpleExpansionPanel: FC<SimpleExpansionPanelProps> = ({id, isExpanded = false }) => {
+export const SimpleExpansionPanel: FC<SimpleExpansionPanelProps> = ({id, isExpanded = false, style }) => {
   const classes = useStyles();
 
   const [isExpand , handleExpand] = useState(isExpanded);// its dangerous.. i know
@@ -41,8 +42,14 @@ export const SimpleExpansionPanel: FC<SimpleExpansionPanelProps> = ({id, isExpan
         >
           <Typography className={classes.heading}>Panel {id}</Typography>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
+        <ExpansionPanelDetails style={style}>
           <Typography>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
+            sit amet blandit leo lobortis eget.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
+            sit amet blandit leo lobortis eget.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
+            sit amet blandit leo lobortis eget.
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
             sit amet blandit leo lobortis eget.
           </Typography>

@@ -1,39 +1,53 @@
 import React, { FC, useCallback } from "react";
 import { DragDropContext, DropResult, DraggableLocation } from "react-beautiful-dnd";
 
-import { DragabbleColumn } from  './dragabble-column/dragabble-column.component';
-import { Item } from './dragabble-item/draggable-item.component';
+import { DragabbleColumn, Column } from  './dragabble-column/dragabble-column.component';
 
 import { reorder } from './utils/reorder';
 
-/**
- * Moves an item from one list to another list.
- */
-const move = (source: Item[], destination: Item[], droppableSource: DraggableLocation, droppableDestination: DraggableLocation) => {
-  const sourceClone = Array.from(source);
-  const destClone = Array.from(destination);
-  const [removed] = sourceClone.splice(droppableSource.index, 1);
-
-  destClone.splice(droppableDestination.index, 0, removed);
-
-  const result: any = {};
-  result[droppableSource.droppableId] = sourceClone;
-  result[droppableDestination.droppableId] = destClone;
-
-  return result;
-};
-
-
-export interface Column {
-  [key: string]: { items: Item[]; style?: object; }
-}
-
 interface DragAndDropProps {
-  columns: Column;
-  onColumnsUpdate: (obj: Column) => void;
+  columns: {[key: string]: Column};
+  onColumnsUpdate: (obj: {[key: string]: Column}) => void;
 }
 
 export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) => {
+
+  /**
+   * Moves an item from one list to another list.
+   */
+  const move = useCallback(
+    (sourceColumn: Column, destinationColumn: Column, droppableSource: DraggableLocation, droppableDestination: DraggableLocation) => {
+      const sourceItemsClone = Array.from(sourceColumn.items);
+      const destItemsClone = Array.from(destinationColumn.items);
+
+      // if destination reached its max, items should be swapped
+      const destColumnMax = destinationColumn.max;
+      if (destColumnMax && destItemsClone.length >= destColumnMax) {
+        // do swapping
+        // droppable index should be less than column max
+        if(droppableDestination.index && droppableDestination.index < destColumnMax) {
+          // removing elements at their indexes
+          const [soureceRemoved] = sourceItemsClone.splice(droppableSource.index, 1);
+          const [destinationRemoved] = destItemsClone.splice(droppableDestination.index, 1);
+          // adding source removed to destinattion,,, and desitnation removed to source
+          destItemsClone.splice(droppableDestination.index, 0, soureceRemoved);
+          sourceItemsClone.splice(droppableSource.index, 0, destinationRemoved);
+        }
+      } else {
+        // remmove item from source
+        const [removed] = sourceItemsClone.splice(droppableSource.index, 1);
+        // add item to destination
+        destItemsClone.splice(droppableDestination.index, 0, removed);
+      }
+
+      const result: any = {};
+      result[droppableSource.droppableId] = sourceItemsClone;
+      result[droppableDestination.droppableId] = destItemsClone;
+    
+      return result;
+    },
+    []
+  )
 
   const onDragEnd = useCallback(
     (result: DropResult) => {
@@ -64,8 +78,8 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) =>
       } else {
           // get the updated source and destination lists
           const result = move(
-              columns[source.droppableId].items,
-              columns[destination.droppableId].items,
+              columns[source.droppableId],
+              columns[destination.droppableId],
               source,
               destination
           );
@@ -83,7 +97,7 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) =>
           });
         }
       },
-    [columns, onColumnsUpdate]
+    [columns, onColumnsUpdate, move]
   );
 
   return (
@@ -93,11 +107,19 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) =>
           <DragabbleColumn
             key={key} 
             droppableId={key}
-            items={columns[key].items}
-            style={columns[key].style}
+            column={{
+              name: key,
+              ...columns[key]
+            }}
           />
         ))
       }
     </DragDropContext>
   );
 }
+
+/**
+ * Assumptions
+ * 
+ * once column reaches max elements, dragging and drop will swap the items.
+ */
