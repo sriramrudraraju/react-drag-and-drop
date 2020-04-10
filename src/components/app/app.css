@@ -1,4 +1,5 @@
 .app-root {
   display: flex;
   border: 2px dashed gray;
+  height: 500px;
 }
