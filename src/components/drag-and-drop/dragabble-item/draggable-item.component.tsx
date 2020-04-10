@@ -5,8 +5,8 @@ import { Column } from '../dragabble-column/dragabble-column.component';
 
 export interface Item {
   id: string | number; // NOTE: id has to be unique across all dragging elements
-  children: (snapshot: DraggableStateSnapshot, item: Item, column: Column, index: number) => string | JSX.Element | null;
-  getItemStyle?: (item: Item, snanShot: DraggableStateSnapshot, style: any) => object;
+  children: (snapshot: DraggableStateSnapshot, item: Item, column: Column, index: number, columns: {[key: string]: Column}) => string | JSX.Element | null;
+  getItemStyle?: (item: Item, snanShot: DraggableStateSnapshot, style: any, column: Column, index: number, columns: {[key: string]: Column}) => object;
   [key: string]: any;
 }
 
@@ -14,10 +14,11 @@ interface DraggableItemProps {
   item: Item;
   index: number;
   column: Column;
+  isDragDisabled?: boolean;
   columns: {[key: string]: Column}
 }
 
-export const DraggableItem: FC<DraggableItemProps> = ({ item, index, column, columns }) => {
+export const DraggableItem: FC<DraggableItemProps> = ({ item, index, column, columns, isDragDisabled = false }) => {
   const getStyle = useCallback(
     (provided: DraggableProvided, snapshot: DraggableStateSnapshot) => {
       // more info on below structure 
@@ -27,8 +28,8 @@ export const DraggableItem: FC<DraggableItemProps> = ({ item, index, column, col
       // TODO: do custom animation for swapping 
       if (item.getItemStyle) {
         // if callback exists pass the style to consumer, so they can update the style objects
-        if (!snapshot.isDragging) return item.getItemStyle(item, snapshot, {});
-        if (!snapshot.isDropAnimating) return item.getItemStyle(item, snapshot, style);
+        if (!snapshot.isDragging) return item.getItemStyle(item, snapshot, {}, column, index, columns);
+        if (!snapshot.isDropAnimating) return item.getItemStyle(item, snapshot, style, column, index, columns);
         return item.getItemStyle(
           item,
           snapshot,
@@ -36,7 +37,8 @@ export const DraggableItem: FC<DraggableItemProps> = ({ item, index, column, col
             ...style,
             // cannot be 0, but make it super tiny
             transitionDuration: `0.001s`,
-          }
+          }, 
+          column, index, columns
         )
       } else {
         if (!snapshot.isDragging) return {};
@@ -48,11 +50,11 @@ export const DraggableItem: FC<DraggableItemProps> = ({ item, index, column, col
         }
       }
     },
-    [item]
+    [item, column, index, columns]
   );
 
   return (
-    <Draggable draggableId={`${item.id}`} index={index}>
+    <Draggable draggableId={`${item.id}`} index={index} isDragDisabled={isDragDisabled}>
       {(provided, snapshot) => (
         <div
           {...provided.draggableProps}
@@ -60,7 +62,7 @@ export const DraggableItem: FC<DraggableItemProps> = ({ item, index, column, col
           ref={(ref) => provided.innerRef(ref)}
           style={getStyle(provided, snapshot)}
         >
-          {item.children(snapshot, item, column, index)}
+          {item.children(snapshot, item, column, index, columns)}
         </div>
       )}
     </Draggable>

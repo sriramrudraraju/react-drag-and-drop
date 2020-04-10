@@ -7,10 +7,11 @@ import { reorder } from './utils/reorder';
 
 interface DragAndDropProps {
   columns: {[key: string]: Column};
-  onColumnsUpdate: (obj: {[key: string]: Column}) => void;
+  onColumnsUpdate: (obj: {[key: string]: Column}, dropResult?: DropResult) => void;
+  isDragDisabled?: boolean;
 }
 
-export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) => {
+export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate, isDragDisabled}) => {
 
   /**
    * Moves an item from one list to another list.
@@ -74,7 +75,7 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) =>
             ...columns[source.droppableId],
             items: reorderedList
           }
-        });
+        }, result);
       } else {
           // get the updated source and destination lists
           const result = move(
@@ -94,7 +95,7 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) =>
                 ...columns[destination.droppableId],
                 items: result[destination.droppableId]
               }
-          });
+          }, result);
         }
       },
     [columns, onColumnsUpdate, move]
@@ -112,6 +113,7 @@ export const DragAndDrop: FC<DragAndDropProps> = ({columns, onColumnsUpdate}) =>
               ...columns[key]
             }}
             columns={columns}
+            isDragDisabled={isDragDisabled}
           />
         ))
       }

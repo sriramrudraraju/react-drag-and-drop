@@ -14,9 +14,10 @@ export interface DragabbleColumnProps {
   droppableId: string;
   column: Column;
   columns: {[key: string]: Column};
+  isDragDisabled?: boolean;
 }
 
-export const DragabbleColumn: FC<DragabbleColumnProps> = ({droppableId, column, columns}) => {
+export const DragabbleColumn: FC<DragabbleColumnProps> = ({droppableId, column, columns, isDragDisabled}) => {
   const { items, style } = column;
   return (
       <Droppable droppableId={droppableId}>
@@ -30,6 +31,7 @@ export const DragabbleColumn: FC<DragabbleColumnProps> = ({droppableId, column, 
                   key={ele.id} 
                   column={column} 
                   columns={columns}
+                  isDragDisabled={isDragDisabled}
                 />
               ))
             }
