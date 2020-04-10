@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { DraggingStyle, NotDraggingStyle, DraggableStateSnapshot } from "react-beautiful-dnd";
 
 import { DragAndDrop } from '../drag-and-drop/drag-and-drop.component';
 import { SimpleExpansionPanel } from '../../common/components/expansion-panel/expansion-panel.component';
@@ -9,22 +8,21 @@ import { Column } from '../drag-and-drop/dragabble-column/dragabble-column.compo
 import './app.css';
 
 // styles for items
-const getItemStyle = (snapshot: DraggableStateSnapshot, style?:  DraggingStyle | NotDraggingStyle) => {
-  // more info on how to play with drop animation
-  // https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/drop-animation.md
-  return ({
-    // some basic styles to make the items look a bit nicer
-    userSelect: 'none',
-    padding: 4,
-    marginBottom: 4,
-    // change background colour if dragging
-  })
+const getItemStyle = (item: any, snapshot: any, style: any) => {
+  const { isDragging } = snapshot;
+  return {
+    ...style,
+    padding: 8,
+    background: isDragging? 'grey' : 'white',
+  }
 };
 
 // fake data generator
-const getItems = (count: number, offset = 0) =>
-  Array.from({ length: count }, (v, k) => k).map(k => ({
+function getItems(count: number, offset = 0) {
+  return (
+    Array.from({ length: count }, (v, k) => k).map(k => ({
       id: `item-${k + offset}`,
+      expand: false,
       children: (snapshot: any, item: any, column: any, index: number) => {
         const isExpanded = (
           (column.name === 'column1' || column.name === 'column2' || column.name === 'column3') &&
@@ -33,7 +31,7 @@ const getItems = (count: number, offset = 0) =>
 
         return (
           <SimpleExpansionPanel
-          key={index}
+            key={index}
             isExpanded={isExpanded} 
             id={k + offset} 
             style={{
@@ -44,13 +42,16 @@ const getItems = (count: number, offset = 0) =>
         )
       },
       getItemStyle
-  }));
+    }
+  )))
+};
 
 
 const COLUMNS = {
   column1: {
     items: getItems(2),
     max: 2,
+    name: 'column1',
     style: {
       display: 'flex',
       flexDirection: 'column',
@@ -59,10 +60,12 @@ const COLUMNS = {
     }
   },
   column2: {
+    name: 'column2',
     items: getItems(2, 2),
     max: 2
   },
   column3: {
+    name: 'column3', // have to use same name as prop, TODO: add ts to forec it
     items: getItems(5, 4)
   }
 }
