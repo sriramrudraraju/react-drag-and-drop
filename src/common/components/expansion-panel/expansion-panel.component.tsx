@@ -16,13 +16,13 @@ const useStyles = makeStyles(() =>
 );
 
 interface SimpleExpansionPanelProps {
-  id: number;
+  title: string;
   isExpanded?: boolean;
   style?: object;
   handleExpand: (flag: boolean) => void;
 }
 
-export const SimpleExpansionPanel: FC<SimpleExpansionPanelProps> = ({id, isExpanded = false, style, handleExpand }) => {
+export const SimpleExpansionPanel: FC<SimpleExpansionPanelProps> = ({title, isExpanded = false, style, handleExpand }) => {
   const classes = useStyles();
 
   const onChange = useCallback(
@@ -39,7 +39,7 @@ export const SimpleExpansionPanel: FC<SimpleExpansionPanelProps> = ({id, isExpan
         aria-controls="panel1a-content"
         id="panel1a-header"
       >
-        <Typography className={classes.heading}>Panel {id}</Typography>
+        <Typography className={classes.heading}>Panel {title}</Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails style={style}>
         <Typography>
