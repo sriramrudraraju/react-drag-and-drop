@@ -1,18 +1,20 @@
-import React, { FC, useCallback } from "react";
-import { DragDropContext, DropResult, DraggableLocation } from "react-beautiful-dnd";
+import React, { FC, useCallback } from 'react';
+import { DragDropContext, DropResult, DraggableLocation } from 'react-beautiful-dnd';
 
-import { DragabbleColumn, Column } from  './dragabble-column/dragabble-column.component';
+import { DragabbleColumn, Column } from './dragabble-column/dragabble-column.component';
+import { ItemMap } from './dragabble-item/dragabble-item.component';
 
 import { reorder } from './utils/reorder';
 
 interface DragAndDropProps {
   columns: {[key: string]: Column};
+  itemsMap: {[key: number]: ItemMap};
   onColumnsUpdate: (obj: {[key: string]: Column}, dropResult?: DropResult) => void;
   isDragDisabled?: boolean;
 }
 
 export const DragAndDrop: FC<DragAndDropProps> = React.memo(
-  ({columns, onColumnsUpdate, isDragDisabled}) => {
+  ({columns, onColumnsUpdate, isDragDisabled, itemsMap}) => {
     /**
      * Moves an item from one list to another list.
      */
@@ -48,7 +50,7 @@ export const DragAndDrop: FC<DragAndDropProps> = React.memo(
         return result;
       },
       []
-    )
+    );
   
     const onDragEnd = useCallback(
       (result: DropResult) => {
@@ -63,9 +65,9 @@ export const DragAndDrop: FC<DragAndDropProps> = React.memo(
         if (source.droppableId === destination.droppableId) {
           // reorder them
           const reorderedList = reorder(
-              columns[source.droppableId].items,
-              source.index,
-              destination.index
+            columns[source.droppableId].items,
+            source.index,
+            destination.index
           );
     
           // update source column list state
@@ -77,44 +79,47 @@ export const DragAndDrop: FC<DragAndDropProps> = React.memo(
             }
           }, result);
         } else {
-            // get the updated source and destination lists
-            const result = move(
-                columns[source.droppableId],
-                columns[destination.droppableId],
-                source,
-                destination
-            );
-      
-            onColumnsUpdate({
-                ...columns,
-                [source.droppableId]: {
-                  ...columns[source.droppableId],
-                  items: result[source.droppableId]
-                },
-                [destination.droppableId]: {
-                  ...columns[destination.droppableId],
-                  items: result[destination.droppableId]
-                }
-            }, result);
-          }
-        },
+          // get the updated source and destination lists
+          const moveResult = move(
+            columns[source.droppableId],
+            columns[destination.droppableId],
+            source,
+            destination
+          );
+    
+          onColumnsUpdate({
+            ...columns,
+            [source.droppableId]: {
+              ...columns[source.droppableId],
+              items: moveResult[source.droppableId]
+            },
+            [destination.droppableId]: {
+              ...columns[destination.droppableId],
+              items: moveResult[destination.droppableId]
+            }
+          }, result);
+        }
+      },
       [columns, onColumnsUpdate, move]
     );
   
     return (
-      <DragDropContext onDragEnd={onDragEnd}>
-        {
-          Object.keys(columns).map((key) => (
-            <DragabbleColumn
-              key={key} 
-              droppableId={key}
-              column={columns[key]}
-              columns={columns}
-              isDragDisabled={isDragDisabled}
-            />
-          ))
-        }
-      </DragDropContext>
+      <div style={{display: 'flex'}}>
+        <DragDropContext onDragEnd={onDragEnd}>
+          {
+            Object.keys(columns).map((key) => (
+              <DragabbleColumn
+                key={key} 
+                droppableId={key}
+                itemsMap={itemsMap}
+                column={columns[key]}
+                columns={columns}
+                isDragDisabled={isDragDisabled}
+              />
+            ))
+          }
+        </DragDropContext>
+      </div>
     );
   }
-)
+);
