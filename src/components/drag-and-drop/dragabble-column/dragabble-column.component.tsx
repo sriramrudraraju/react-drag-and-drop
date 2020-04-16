@@ -1,16 +1,19 @@
 import React, { FC } from 'react';
-import { Droppable } from "react-beautiful-dnd";
+import { Droppable } from 'react-beautiful-dnd';
 
-import { DraggableItem, Item } from '../dragabble-item/draggable-item.component';
+import { DraggableItem, BaseItem, ItemMap } from '../dragabble-item/dragabble-item.component';
 
 export interface Column{
-  items: Item[];
+  items: BaseItem[];
   name: string; 
   style?: object; // column style
   max?: number; // max number of elements in a column
+  hide?: boolean;
+  [key: string]: any; // extar props specific to a project
 }
 
 export interface DragabbleColumnProps {
+  itemsMap: {[key: number]: ItemMap };
   droppableId: string;
   column: Column;
   columns: {[key: string]: Column};
@@ -18,28 +21,33 @@ export interface DragabbleColumnProps {
 }
 
 export const DragabbleColumn: FC<DragabbleColumnProps> = React.memo(
-  ({droppableId, column, columns, isDragDisabled}) => {
-    const { items, style } = column;
+  ({droppableId, column, columns, isDragDisabled, itemsMap}) => {
+    const { items, style, hide } = column;
+    
+    if (hide) {
+      return null;
+    }
+
     return (
-        <Droppable droppableId={droppableId}>
-          {(provided) => (
-            <div ref={provided.innerRef} {...provided.droppableProps} style={{...style}}>
-              {
-                items && items.map((ele, index) => (
-                  <DraggableItem 
-                    item={ele} 
-                    index={index} 
-                    key={ele.id} 
-                    column={column} 
-                    columns={columns}
-                    isDragDisabled={isDragDisabled}
-                  />
-                ))
-              }
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-    )
+      <Droppable droppableId={droppableId}>
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.droppableProps} style={{...style}}>
+            {
+              items && items.map((ele, index) => (
+                <DraggableItem 
+                  item={{...ele, ...itemsMap[ele.id]}} 
+                  index={index} 
+                  key={`${ele.id} ${index}`} 
+                  column={column} 
+                  columns={columns}
+                  isDragDisabled={isDragDisabled}
+                />
+              ))
+            }
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    );
   }
-)
+);
