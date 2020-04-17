@@ -16,7 +16,7 @@ export interface DragabbleColumnProps {
   itemsMap: {[key: number]: ItemMap };
   droppableId: string;
   column: Column;
-  columns: {[key: string]: Column};
+  columns: Column[];
   isDragDisabled?: boolean;
 }
 

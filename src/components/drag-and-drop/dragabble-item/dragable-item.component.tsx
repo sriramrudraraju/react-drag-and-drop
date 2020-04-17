@@ -7,7 +7,7 @@ export interface ItemDetails {
   readonly index: number;
   readonly item: Item;
   readonly column: Column;
-  readonly columns: {[key: string]: Column};
+  readonly columns: Column[];
   readonly draggingSnapshot: DraggableStateSnapshot;
   readonly style?: any;
 }
@@ -29,7 +29,7 @@ interface DragableItemProps {
   index: number;
   column: Column;
   isDragDisabled?: boolean;
-  columns: {[key: string]: Column};
+  columns: Column[];
 }
 
 export const DragableItem: FC<DragableItemProps> = React.memo(

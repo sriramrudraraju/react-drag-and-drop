@@ -6,10 +6,21 @@ import { ItemMap } from './dragabble-item/dragable-item.component';
 
 import { reorder } from './utils/reorder';
 
+
+const columnIndex = (cols: Column[], name: string) => {
+  let x = -1;
+  cols.forEach((col, i) => {
+    if (col.name === name) {
+      x = i;
+    }
+  })
+  return x;
+}
+
 interface DragAndDropProps {
-  columns: {[key: string]: Column};
+  columns: Column[];
   itemsMap: {[key: number]: ItemMap};
-  onColumnsUpdate: (obj: {[key: string]: Column}, dropResult?: DropResult) => void;
+  onColumnsUpdate: (cols: Column[], dropResult?: DropResult) => void;
   isDragDisabled?: boolean;
 }
 
@@ -60,44 +71,47 @@ export const DragAndDrop: FC<DragAndDropProps> = React.memo(
         if (!destination) {
           return;
         }
+
+        // position at which the source name exists in array
+        const sourceColumnIndex = columnIndex(columns, source.droppableId);
+        // position at which the source name exists in array
+        const destinationColumnIndex = columnIndex(columns, destination.droppableId);
     
         // if within same column
         if (source.droppableId === destination.droppableId) {
           // reorder them
           const reorderedList = reorder(
-            columns[source.droppableId].items,
+            // @ts-ignore. index signature for columns
+            columns[sourceColumnIndex].items,
             source.index,
             destination.index
           );
+
+          const columnsClone = Array.from(columns);
+          // @ts-ignore. index signature for columns
+          columnsClone[sourceColumnIndex].items = reorderedList;
     
           // update source column list state
-          onColumnsUpdate({
-            ...columns,
-            [source.droppableId]: {
-              ...columns[source.droppableId],
-              items: reorderedList
-            }
-          }, result);
+          onColumnsUpdate(columnsClone, result);
         } else {
           // get the updated source and destination lists
           const moveResult = move(
-            columns[source.droppableId],
-            columns[destination.droppableId],
+            // @ts-ignore. index signature for columns
+            columns[sourceColumnIndex],
+            // @ts-ignore. index signature for columns
+            columns[destinationColumnIndex],
             source,
             destination
           );
+
+          const columnsClone = Array.from(columns);
+          // @ts-ignore. index signature for columns
+          columnsClone[sourceColumnIndex].items = moveResult[source.droppableId];
+          // @ts-ignore. index signature for columns
+          columnsClone[destinationColumnIndex].items = moveResult[destination.droppableId];
     
-          onColumnsUpdate({
-            ...columns,
-            [source.droppableId]: {
-              ...columns[source.droppableId],
-              items: moveResult[source.droppableId]
-            },
-            [destination.droppableId]: {
-              ...columns[destination.droppableId],
-              items: moveResult[destination.droppableId]
-            }
-          }, result);
+          // update source column list state
+          onColumnsUpdate(columnsClone, result);
         }
       },
       [columns, onColumnsUpdate, move]
@@ -107,13 +121,13 @@ export const DragAndDrop: FC<DragAndDropProps> = React.memo(
       <div style={{display: 'flex'}}>
         <DragDropContext onDragEnd={onDragEnd}>
           {
-            Object.keys(columns).map((key) => (
+            (columns as Column[]).map((col) => (
               <DragabbleColumn
-                key={key} 
-                droppableId={key}
+                key={col.name} 
+                droppableId={col.name}
                 itemsMap={itemsMap}
-                column={columns[key]}
-                columns={columns}
+                column={col}
+                columns={columns as Column[]}
                 isDragDisabled={isDragDisabled}
               />
             ))

@@ -3,21 +3,30 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { DragAndDrop } from '../drag-and-drop/drag-and-drop.component';
 import { SimpleExpansionPanel } from '../../common/components/expansion-panel/expansion-panel.component';
 
+import { Column } from '../drag-and-drop/dragabble-column/dragabble-column.component';
 import { ItemDetails } from '../drag-and-drop/dragabble-item/dragable-item.component';
 
-import './app.css';
+const columnIndex = (cols: Column[], name: string) => {
+  let x = -1;
+  cols.forEach((col, i) => {
+    if (col.name === name) {
+      x = i;
+    }
+  })
+  return x;
+}
 
-const COLUMNS = {
-  column1: {
+const COLUMNS = [
+  {
     name: 'column1',
     max: 2,
-    items: [{id: 1, expand: true}, {id: 2, expand: true}]
+    items: [{id: 1, expand: false}, {id: 2, expand: false}]
   },
-  column2: {
+  {
     name: 'column2',
-    items: [{id: 3, expand: true}]
+    items: [{id: 3, expand: false}]
   }
-}
+]
 
 
 // styles for items
@@ -31,10 +40,10 @@ function getItemStyle({draggingSnapshot, style}: ItemDetails) {
 };
 
 export const App = () => {
-  const [columns, setColumns] = useState<any>(COLUMNS);
+  const [columns, setColumns] = useState<Column[]>(COLUMNS);
 
   const onColumnsUpdate = useCallback(
-    (cols: any) => {
+    (cols: Column[]) => {
       setColumns(cols);
     },
     []
@@ -45,13 +54,11 @@ export const App = () => {
       const { column, index } = itemDetails;
       const columnItems = [...column.items];
       columnItems[index].expand = flag;
-      setColumns({
-        ...columns,
-        [column.name]: {
-          ...columns[column.name],
-          items: columnItems
-        }
-      })
+      // position at which the source name exists in array
+      const sourceColumnIndex = columnIndex(columns, column.name);
+      const columnsClone = Array.from(columns);
+      columnsClone[sourceColumnIndex].items = columnItems;
+      setColumns(columnsClone)
     },
     [columns]
   );
