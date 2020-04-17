@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import { DragDropContext, DropResult, DraggableLocation } from 'react-beautiful-dnd';
 
 import { DragabbleColumn, Column } from './dragabble-column/dragabble-column.component';
-import { ItemMap } from './dragabble-item/dragabble-item.component';
+import { ItemMap } from './dragabble-item/dragable-item.component';
 
 import { reorder } from './utils/reorder';
 

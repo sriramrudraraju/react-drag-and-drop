@@ -24,7 +24,7 @@ export interface BaseItem {
 
 export type Item = BaseItem & ItemMap;
 
-interface DraggableItemProps {
+interface DragableItemProps {
   item: Item;
   index: number;
   column: Column;
@@ -32,7 +32,7 @@ interface DraggableItemProps {
   columns: {[key: string]: Column};
 }
 
-export const DraggableItem: FC<DraggableItemProps> = React.memo(
+export const DragableItem: FC<DragableItemProps> = React.memo(
   ({ item, index, column, columns, isDragDisabled = false }) => {
     const itemDetails = { index, item, column, columns };
     
