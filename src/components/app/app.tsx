@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { DragAndDrop } from '../drag-and-drop/drag-and-drop.component';
 import { SimpleExpansionPanel } from '../../common/components/expansion-panel/expansion-panel.component';
@@ -18,91 +18,7 @@ const COLUMNS = {
     items: [{id: 3, expand: true}]
   }
 }
-export class App extends React.Component<{}, any> {
-  constructor(props: {}) {
-    super(props);
-    this.handleExpand = this.handleExpand.bind(this);
-    this.onColumnsUpdate = this.onColumnsUpdate.bind(this);
 
-    this.state = {
-      items: {
-        1: {
-          getItemStyle,
-          children: (itemDetails: ItemDetails) => {
-            const { item } = itemDetails;
-            return (
-              <SimpleExpansionPanel 
-                title={`${item.id}`} 
-                isExpanded={item.expand}
-                handleExpand={(flag: boolean) => this.handleExpand(flag, itemDetails)}
-              />
-            )
-          }
-        },
-        2: {
-          getItemStyle,
-          children: (itemDetails: ItemDetails) => {
-            const { item } = itemDetails;
-            return (
-              <SimpleExpansionPanel 
-                title={`${item.id}`} 
-                isExpanded={item.expand}
-                handleExpand={(flag: boolean) => this.handleExpand(flag, itemDetails)}
-              />
-            )
-          }
-        },
-        3: {
-          getItemStyle,
-          children: (itemDetails: ItemDetails) => {
-            const { item } = itemDetails;
-            return (
-              <SimpleExpansionPanel 
-                title={`${item.id}`} 
-                isExpanded={item.expand}
-                handleExpand={(flag: boolean) => this.handleExpand(flag, itemDetails)}
-              />
-            )
-          }
-        }
-      },
-      columns: COLUMNS
-    }
-  }
-
-  handleExpand(flag: boolean, itemDetails: ItemDetails) {
-    const { column, index } = itemDetails;
-    const columnItems = [...column.items];
-    columnItems[index].expand = flag;
-    this.setState({
-      columns: {
-        ...this.state.columns,
-        [column.name]: {
-          ...this.state.columns[column.name],
-          items: columnItems
-        }
-      }
-    })
-  }
-
-  onColumnsUpdate(columns: any) {
-    this.setState({
-      columns
-    });
-  }
-
-  render() {
-    return (
-      <div>
-        <DragAndDrop 
-          columns={this.state.columns}
-          onColumnsUpdate={this.onColumnsUpdate}
-          itemsMap={this.state.items}
-        />
-      </div>
-    );
-  }
-}
 
 // styles for items
 function getItemStyle({draggingSnapshot, style}: ItemDetails) {
@@ -113,3 +29,83 @@ function getItemStyle({draggingSnapshot, style}: ItemDetails) {
     background: isDragging? 'grey' : 'white',
   }
 };
+
+export const App = () => {
+  const [columns, setColumns] = useState<any>(COLUMNS);
+
+  const onColumnsUpdate = useCallback(
+    (cols: any) => {
+      setColumns(cols);
+    },
+    []
+  );
+
+  const handleExpand = useCallback(
+    (flag: boolean, itemDetails: ItemDetails) => {
+      const { column, index } = itemDetails;
+      const columnItems = [...column.items];
+      columnItems[index].expand = flag;
+      setColumns({
+        ...columns,
+        [column.name]: {
+          ...columns[column.name],
+          items: columnItems
+        }
+      })
+    },
+    [columns]
+  );
+
+  const itemsMap = useMemo(
+    () => ({
+      1: {
+        getItemStyle,
+        children: (itemDetails: ItemDetails) => {
+          const { item } = itemDetails;
+          return (
+            <SimpleExpansionPanel 
+              title={`${item.id}`} 
+              isExpanded={item.expand}
+              handleExpand={(flag: boolean) => handleExpand(flag, itemDetails)}
+            />
+          )
+        }
+      },
+      2: {
+        getItemStyle,
+        children: (itemDetails: ItemDetails) => {
+          const { item } = itemDetails;
+          return (
+            <SimpleExpansionPanel 
+              title={`${item.id}`} 
+              isExpanded={item.expand}
+              handleExpand={(flag: boolean) => handleExpand(flag, itemDetails)}
+            />
+          )
+        }
+      },
+      3: {
+        getItemStyle,
+        children: (itemDetails: ItemDetails) => {
+          const { item } = itemDetails;
+          return (
+            <SimpleExpansionPanel 
+              title={`${item.id}`} 
+              isExpanded={item.expand}
+              handleExpand={(flag: boolean) => handleExpand(flag, itemDetails)}
+            />
+          )
+        }
+      }
+    }),
+    [handleExpand]
+  )
+
+  return (
+    <DragAndDrop 
+      columns={columns}
+      onColumnsUpdate={onColumnsUpdate}
+      itemsMap={itemsMap}
+    />
+  )
+}
