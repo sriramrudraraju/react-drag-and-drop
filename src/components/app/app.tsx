@@ -4,7 +4,7 @@ import { DragAndDrop } from '../drag-and-drop/drag-and-drop.component';
 import { SimpleExpansionPanel } from '../../common/components/expansion-panel/expansion-panel.component';
 
 import { Column } from '../drag-and-drop/dragabble-column/dragabble-column.component';
-import { ItemDetails } from '../drag-and-drop/dragabble-item/dragable-item.component';
+import { ItemDetails } from '../drag-and-drop/dragabble-item/dragabble-item.component';
 
 const columnIndex = (cols: Column[], name: string) => {
   let x = -1;

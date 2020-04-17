@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 
-import { DragableItem, BaseItem, ItemMap } from '../dragabble-item/dragable-item.component';
+import { DragableItem, BaseItem, ItemMap } from '../dragabble-item/dragabble-item.component';
 
 export interface Column{
   items: BaseItem[];
@@ -9,7 +9,6 @@ export interface Column{
   style?: object; // column style
   max?: number; // max number of elements in a column
   hide?: boolean;
-  [key: string]: any; // extar props specific to a project
 }
 
 export interface DragabbleColumnProps {
