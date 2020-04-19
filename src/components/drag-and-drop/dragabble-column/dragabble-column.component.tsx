@@ -3,8 +3,8 @@ import { Droppable } from 'react-beautiful-dnd';
 
 import { DragableItem, BaseItem, ItemMap } from '../dragabble-item/dragabble-item.component';
 
-export interface Column{
-  items: BaseItem[];
+export interface Column<T = {}>{
+  items: BaseItem<T>[];
   name: string; 
   style?: object; // column style
   max?: number; // max number of elements in a column

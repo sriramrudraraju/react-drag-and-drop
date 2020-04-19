@@ -4,7 +4,7 @@ import { DragAndDrop } from '../drag-and-drop/drag-and-drop.component';
 import { SimpleExpansionPanel } from '../../common/components/expansion-panel/expansion-panel.component';
 
 import { Column } from '../drag-and-drop/dragabble-column/dragabble-column.component';
-import { ItemDetails } from '../drag-and-drop/dragabble-item/dragabble-item.component';
+import { ItemDetails, ItemMap } from '../drag-and-drop/dragabble-item/dragabble-item.component';
 
 const columnIndex = (cols: Column[], name: string) => {
   let x = -1;
@@ -26,8 +26,7 @@ const COLUMNS = [
     name: 'column2',
     items: [{id: 3, expand: false}]
   }
-]
-
+];
 
 // styles for items
 function getItemStyle({draggingSnapshot, style}: ItemDetails) {
@@ -50,7 +49,7 @@ export const App = () => {
   );
 
   const handleExpand = useCallback(
-    (flag: boolean, itemDetails: ItemDetails) => {
+    (flag: boolean, itemDetails: ItemDetails<{expand: boolean}>) => {
       const { column, index } = itemDetails;
       const columnItems = [...column.items];
       columnItems[index].expand = flag;
@@ -67,7 +66,7 @@ export const App = () => {
     () => ({
       1: {
         getItemStyle,
-        children: (itemDetails: ItemDetails) => {
+        children: (itemDetails: ItemDetails<{expand: boolean}>) => {
           const { item } = itemDetails;
           return (
             <SimpleExpansionPanel 
@@ -80,7 +79,7 @@ export const App = () => {
       },
       2: {
         getItemStyle,
-        children: (itemDetails: ItemDetails) => {
+        children: (itemDetails: ItemDetails<{expand: boolean}>) => {
           const { item } = itemDetails;
           return (
             <SimpleExpansionPanel 
@@ -93,7 +92,7 @@ export const App = () => {
       },
       3: {
         getItemStyle,
-        children: (itemDetails: ItemDetails) => {
+        children: (itemDetails: ItemDetails<{expand: boolean}>) => {
           const { item } = itemDetails;
           return (
             <SimpleExpansionPanel 
@@ -112,7 +111,7 @@ export const App = () => {
     <DragAndDrop 
       columns={columns}
       onColumnsUpdate={onColumnsUpdate}
-      itemsMap={itemsMap}
+      itemsMap={itemsMap as unknown as {[key: number]: ItemMap }}
     />
   )
 }

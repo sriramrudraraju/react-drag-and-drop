@@ -3,26 +3,25 @@ import { Draggable, DraggableStateSnapshot, DraggableProvided } from 'react-beau
 
 import { Column } from '../dragabble-column/dragabble-column.component';
 
-export interface ItemDetails {
+export interface ItemDetails<T = {}> {
   readonly index: number;
-  readonly item: Item;
-  readonly column: Column;
-  readonly columns: Column[];
+  readonly item: Item<T>;
+  readonly column: Column<T>;
+  readonly columns: Column<T>[];
   readonly draggingSnapshot: DraggableStateSnapshot;
   readonly style?: any;
 }
 
-export interface ItemMap {
-  children: (props: ItemDetails) => string | JSX.Element | null;
-  getItemStyle?: (props: Required<ItemDetails>) => object;
+export interface ItemMap<T = {}> {
+  children: (props: ItemDetails<T>) => string | JSX.Element | null;
+  getItemStyle?: (props: Required<ItemDetails<T>>) => object;
 }
 
-export interface BaseItem {
+export type BaseItem<T = {}> = {
   id: number; // NOTE: id has to be unique across all dragging elements
-  [key: string]: any;
-}
+} & T
 
-export type Item = BaseItem & ItemMap;
+export type Item<T = {}> = BaseItem<T> & ItemMap<T>;
 
 interface DragableItemProps {
   item: Item;
