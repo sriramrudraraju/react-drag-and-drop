@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/react-drag-and-drop/static/css/main.9bfc0a1c.chunk.css",
+    "main.js": "/react-drag-and-drop/static/js/main.9dacb8ef.chunk.js",
+    "main.js.map": "/react-drag-and-drop/static/js/main.9dacb8ef.chunk.js.map",
+    "runtime-main.js": "/react-drag-and-drop/static/js/runtime-main.d5c1f2f3.js",
+    "runtime-main.js.map": "/react-drag-and-drop/static/js/runtime-main.d5c1f2f3.js.map",
+    "static/js/2.0dfdeeeb.chunk.js": "/react-drag-and-drop/static/js/2.0dfdeeeb.chunk.js",
+    "static/js/2.0dfdeeeb.chunk.js.map": "/react-drag-and-drop/static/js/2.0dfdeeeb.chunk.js.map",
+    "index.html": "/react-drag-and-drop/index.html",
+    "precache-manifest.3a6cb70a249d5374e91ede771f7f08a2.js": "/react-drag-and-drop/precache-manifest.3a6cb70a249d5374e91ede771f7f08a2.js",
+    "service-worker.js": "/react-drag-and-drop/service-worker.js",
+    "static/css/main.9bfc0a1c.chunk.css.map": "/react-drag-and-drop/static/css/main.9bfc0a1c.chunk.css.map",
+    "static/js/2.0dfdeeeb.chunk.js.LICENSE.txt": "/react-drag-and-drop/static/js/2.0dfdeeeb.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.d5c1f2f3.js",
+    "static/js/2.0dfdeeeb.chunk.js",
+    "static/css/main.9bfc0a1c.chunk.css",
+    "static/js/main.9dacb8ef.chunk.js"
+  ]
+}
