@@ -25,7 +25,7 @@ Implemented using [react-beautiful-dnd](https://github.com/atlassian/react-beaut
 
 | Props        | Type           | Description  |
 | ------------- |:-------------| :-----|
-| children      | (props: ItemDetails<T>) => string | JSX.Element | null | function that will be invoked at the item position |
+| children      | (props: ItemDetails<T>) => string (or) JSX.Element (or) null | function that will be invoked at the item position |
 | getItemStyle      | (props: Required<ItemDetails<T>>) => object | returns style of an item |
 
 ## `BaseItem` Type
